@@ -1,4 +1,4 @@
-from remiloop import remasync
+from easync import remasync
 import asyncio
 import time
 import random
@@ -24,7 +24,7 @@ def sync_function(value, pow, sleep_time=random.random()):
     time.sleep(sleep_time)
     return value ** pow
 
-
+@remasync
 def normal_func(value, pow_div, nmax):
     return [async_function(value, i/pow_div, random.random()) for i in range(nmax)]
 
@@ -171,33 +171,42 @@ async def run_async(func, *args):
 def run_sync(func, *args):
     return func(*args)
     
-@remasync#(1)
 def fib(n):
     return n if n < 2 else fib(n - 2) + fib(n - 1)
 
+@remasync
+def afib(n):
+    return n if n < 2 else afib(n - 2) + afib(n - 1)
+
 
 def launch_recursive():
+
+    n=5
+
     t1 = time.time()
-    fib_1 = fib(3)
-    print(type(fib_1))
-    print('fib1 result:', fib_1)
+    fib_1 = fib(n)
+    print('fib result:')
+    print(fib_1)
     print(time.time() - t1)
 
-    # t1 = time.time()
-    # fib_1 = fib(20)
-    # print(type(fib_1))
-    # print('fib1 result:', fib_1)
-    # print(time.time() - t1)
+    t1 = time.time()
+    afib_1 = afib(n)
+    print('afib result:')
+    print(afib_1)
+    print(time.time() - t1)
+
 
 if __name__ == '__main__':
     launch_recursive()
 
-    # t1 = time.time()
-    # asyncio.run(run_async(launch_comp))
-    # inside_a_main_async_loop = time.time() - t1
-    # t1 = time.time()
-    # run_sync(launch_comp)
-    # without_a_main_async_loop = time.time() - t1
 
-    # print('inside_a_main_async_loop', inside_a_main_async_loop)
-    # print('without_a_main_async_loop', without_a_main_async_loop)
+    t1 = time.time()
+    run_sync(launch_comp)
+    without_a_main_async_loop = time.time() - t1
+
+    t1 = time.time()
+    asyncio.run(run_async(launch_comp))
+    inside_a_main_async_loop = time.time() - t1
+
+    print('inside_a_main_async_loop', inside_a_main_async_loop)
+    print('without_a_main_async_loop', without_a_main_async_loop)
